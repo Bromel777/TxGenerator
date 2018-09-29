@@ -11,7 +11,7 @@ import org.encryfoundation.common.Algos
 import scorex.crypto.hash.{Blake2b256, Digest32}
 import org.encryfoundation.generator.transaction.directives._
 import org.encryfoundation.common.utils.TaggedTypes.ADKey
-import org.encryfoundation.generator.transaction.box.MonetaryBox
+import org.encryfoundation.generator.transaction.box.{DataBox, MonetaryBox}
 
 /** Completely assembled atomic state modifier. */
 case class EncryTransaction(fee: Long,
@@ -117,6 +117,18 @@ object Transaction {
                                      tokenIdOpt: Option[ADKey] = None): EncryTransaction = {
     val assetIssuingDirective: AssetIssuingDirective = AssetIssuingDirective(contract.hash, amount)
     prepareTransaction(privKey, fee, timestamp, useOutputs, assetIssuingDirective, amount, tokenIdOpt)
+  }
+
+  def dataTransactionScratch(privKey: PrivateKey25519,
+                             fee: Long,
+                             timestamp: Long,
+                             useOutputs: Seq[(MonetaryBox, Option[(CompiledContract, Seq[Proof])])],
+                             contract: CompiledContract,
+                             amount: Long,
+                             data: Array[Byte],
+                             tokenIdOpt: Option[ADKey] = None): EncryTransaction = {
+    val dataDirective: DataDirective = DataDirective(contract.hash, data)
+    prepareTransaction(privKey, fee, timestamp, useOutputs, dataDirective, amount, tokenIdOpt)
   }
 
   private def prepareTransaction(privKey: PrivateKey25519,
