@@ -20,7 +20,7 @@ class Worker(secret: PrivateKey25519, partition: Seq[Box], broadcaster: ActorRef
   override def receive: Receive = {
     case StartGeneration =>
       val listTxs: List[EncryTransaction] = partition.map { case output: MonetaryBox =>
-        val useAmount: Long = output.amount / 4
+        val useAmount: Long = output.amount
         scala.util.Random.nextInt(3) match {
           case 0 =>
             Transaction.dataTransactionScratch(
@@ -41,7 +41,7 @@ class Worker(secret: PrivateKey25519, partition: Seq[Box], broadcaster: ActorRef
               settings.recipientAddress,
               useAmount - settings.worker.feeAmount
             )
-          case 3 =>
+          case 2 =>
             Transaction.assetIssuingTransactionScratch(
               secret,
               settings.worker.feeAmount,
